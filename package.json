@@ -2,6 +2,9 @@
   "name": "bitcoin-retire",
   "version": "1.0.0",
   "main": "server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
@@ -13,12 +16,12 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "axios": "^1.12.2",
-    "better-sqlite3": "^12.4.1",
+    "axios": "^1.7.0",
+    "better-sqlite3": "^11.0.0",
     "chartjs-adapter-date-fns": "^3.0.0",
     "cors": "^2.8.5",
-    "date-fns": "^4.1.0",
-    "express": "^5.1.0",
-    "node-cron": "^4.2.1"
+    "date-fns": "^3.0.0",
+    "express": "^4.19.0",
+    "node-cron": "^3.0.0"
   }
 }

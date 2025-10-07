@@ -138,26 +138,60 @@ function filterChart(filter) {
 function startCountdown() {
   const now = new Date();
 
-  // Next monthly withdrawal: 7th of month at 6:00 PM Brussels time
-  let nextMonthly = new Date(now.getFullYear(), now.getMonth(), 7, 18, 0, 0);
-  if (nextMonthly <= now) {
-    // If we passed the 7th of this month, go to next month
-    nextMonthly = new Date(now.getFullYear(), now.getMonth() + 1, 7, 18, 0, 0);
+  // Simple UTC-based calculation
+  function getNextWithdrawalDate(isMonthly) {
+    const currentUTC = new Date(now.toISOString());
+    let targetDate = new Date(currentUTC);
+
+    if (isMonthly) {
+      // Monthly: 7th of month at 18:00 UTC
+      targetDate.setUTCDate(7);
+      targetDate.setUTCHours(18, 0, 0, 0);
+
+      // If we've passed the 7th at 18:00 UTC this month, go to next month
+      if (targetDate <= now) {
+        targetDate.setUTCMonth(targetDate.getUTCMonth() + 1);
+      }
+    } else {
+      // Weekly: Tuesday (day 2) at 18:00 UTC
+      const currentDay = currentUTC.getUTCDay();
+      let daysUntilTuesday = (2 - currentDay + 7) % 7;
+
+      // If it's Tuesday but past 18:00 UTC, go to next Tuesday
+      if (daysUntilTuesday === 0) {
+        if (currentUTC.getUTCHours() >= 18) {
+          daysUntilTuesday = 7;
+        }
+      }
+
+      targetDate.setUTCDate(currentUTC.getUTCDate() + daysUntilTuesday);
+      targetDate.setUTCHours(18, 0, 0, 0);
+    }
+
+    return targetDate;
   }
+
+  // Next monthly withdrawal: 7th of month at 18:00 UTC
+  const nextMonthly = getNextWithdrawalDate(true);
   const monthlyDiff = nextMonthly - now;
 
-  // Next weekly withdrawal: next Tuesday at 6:00 PM Brussels time
-  const daysUntilTuesday = (2 - now.getDay() + 7) % 7;
-  const nextTuesday = new Date(now);
-  nextTuesday.setDate(now.getDate() + (daysUntilTuesday === 0 ? 7 : daysUntilTuesday));
-  nextTuesday.setHours(18, 0, 0, 0);
+  // Next weekly withdrawal: Tuesday at 18:00 UTC
+  const nextTuesday = getNextWithdrawalDate(false);
+  const weeklyDiff = nextTuesday - now;
 
-  // If today is Tuesday but before 6pm, use today
-  if (now.getDay() === 2 && now.getHours() < 18) {
-    nextTuesday.setDate(now.getDate());
+  // Update labels with local time
+  const monthlyLabel = document.getElementById('monthlyLabel');
+  const weeklyLabel = document.getElementById('weeklyLabel');
+
+  if (monthlyLabel) {
+    const localTime = nextMonthly.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    monthlyLabel.textContent = `Monthly (7th at ${localTime})`;
   }
 
-  const weeklyDiff = nextTuesday - now;
+  if (weeklyLabel) {
+    const localTime = nextTuesday.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    weeklyLabel.textContent = `Weekly (Tuesday at ${localTime})`;
+  }
 
   // Update monthly countdown
   const monthlyEl = document.getElementById('countdownMonthly');
@@ -551,7 +585,13 @@ async function showTransactionModal(wallet) {
     modalTitle.textContent = `${sanitizeHTML(wallet.name)} - Transaction History`;
 
     if (transactions.length === 0) {
-      transactionList.innerHTML = '<div class="no-transactions">No transactions yet. Withdrawals happen on the 8th of each month at 8am.</div>';
+      // Create a sample date for the 7th at 18:00 UTC to get the local time
+      const sampleDate = new Date();
+      sampleDate.setUTCDate(7);
+      sampleDate.setUTCHours(18, 0, 0, 0);
+      const localTime = sampleDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+
+      transactionList.innerHTML = `<div class="no-transactions">No transactions yet. Withdrawals happen on the 7th of each month at ${localTime}.</div>`;
     } else {
       transactionList.innerHTML = `
         <table class="transaction-table">
