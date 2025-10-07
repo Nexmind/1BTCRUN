@@ -62,8 +62,8 @@ const initializeWallets = () => {
       VALUES (?, ?, ?, ?, ?, ?)
     `);
 
-    // Hardcoded start date: Tuesday October 7, 2025 at 6:00 PM Brussels time
-    const startDate = '2025-10-07';
+    // Hardcoded start date: Wednesday October 8, 2025 at midnight
+    const startDate = '2025-10-08';
 
     const monthlyWallets = [
       { name: 'Good help', amount: 1000, frequency: 'monthly' },

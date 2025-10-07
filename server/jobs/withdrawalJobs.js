@@ -141,15 +141,15 @@ async function triggerRealWeeklyWithdrawal() {
  * Start cron jobs
  */
 function startCronJobs() {
-  // Monthly: Every 7th of the month at 6:00 PM UTC
-  cron.schedule('0 18 7 * *', async () => {
-    console.log('\n⏰ Scheduled MONTHLY withdrawal (7th at 6pm UTC)!');
+  // Monthly: Every 8th of the month at midnight UTC
+  cron.schedule('0 0 8 * *', async () => {
+    console.log('\n⏰ Scheduled MONTHLY withdrawal (8th at midnight UTC)!');
     await triggerMonthlyWithdrawal();
   });
 
-  // Weekly: Every Tuesday at 6:00 PM UTC
-  cron.schedule('0 18 * * 2', async () => {
-    console.log('\n⏰ Scheduled WEEKLY withdrawal (Tuesday at 6pm UTC)!');
+  // Weekly: Every Wednesday at midnight UTC
+  cron.schedule('0 0 * * 3', async () => {
+    console.log('\n⏰ Scheduled WEEKLY withdrawal (Wednesday at midnight UTC)!');
     await triggerWeeklyWithdrawal();
   });
 
@@ -164,8 +164,8 @@ function startCronJobs() {
   });
 
   console.log('⏰ Production cron jobs scheduled (UTC):');
-  console.log('  - Monthly withdrawal: 7th of month at 6:00 PM UTC');
-  console.log('  - Weekly withdrawal: Every Tuesday at 6:00 PM UTC');
+  console.log('  - Monthly withdrawal: 8th of month at midnight UTC');
+  console.log('  - Weekly withdrawal: Every Wednesday at midnight UTC');
   console.log('  - BTC price update: Every hour');
   console.log('');
 
