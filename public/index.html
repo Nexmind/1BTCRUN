@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1 BTC Run - How long can you live on 1 Bitcoin?</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+<body>
+  <!-- Theme Toggle -->
+  <div class="theme-toggle">
+    <button class="theme-toggle-btn" id="themeToggle" aria-label="Toggle theme">
+      🌙
+    </button>
+  </div>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <h1 class="title">
+          <span class="btc-symbol">₿</span>
+          1 BTC Run
+        </h1>
+        <p class="subtitle">How long can you live on 1 Bitcoin?</p>
+      </div>
+
+      <div class="btc-price-card">
+        <div class="price-label">Current BTC Price</div>
+        <div class="price-value" id="btcPrice">Loading...</div>
+        <div class="price-updated" id="lastUpdated"></div>
+      </div>
+    </header>
+
+    <!-- Description -->
+    <section class="description">
+      <p>
+        This experiment simulates living on 1 BTC by withdrawing a fixed amount in USD.
+        Each wallet started with <strong>1 BTC</strong> and withdraws based on Bitcoin's current price.
+        Will the long-term appreciation of Bitcoin allow you to live indefinitely? Let's find out!
+      </p>
+    </section>
+
+    <!-- Next Withdrawals Countdown -->
+    <section class="countdown-section">
+      <h3 class="countdown-title">⏰ Next Withdrawals</h3>
+      <div class="countdown-grid">
+        <div class="countdown-card">
+          <div class="countdown-label">Monthly (7th at 6:00 PM)</div>
+          <div class="countdown-value" id="countdownMonthly">Calculating...</div>
+        </div>
+        <div class="countdown-card">
+          <div class="countdown-label">Weekly (Tuesday 6:00 PM)</div>
+          <div class="countdown-value" id="countdownWeekly">Calculating...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-frequency="monthly">Monthly Withdrawals</button>
+      <button class="tab-btn" data-frequency="weekly">Weekly Withdrawals</button>
+    </div>
+
+    <!-- Wallets Grid -->
+    <section class="wallets-grid" id="walletsGrid">
+      <!-- Wallets will be dynamically loaded here -->
+    </section>
+
+    <!-- Comparison Chart -->
+    <section class="chart-section">
+      <div class="chart-header">
+        <h2 class="section-title">Bitcoin Balance Evolution</h2>
+        <div class="chart-filters">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="monthly">Monthly Only</button>
+          <button class="filter-btn" data-filter="weekly">Weekly Only</button>
+        </div>
+      </div>
+      <div class="chart-container">
+        <canvas id="comparisonChart"></canvas>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="donation-section">
+        <p class="donation-text">💰 Enjoying this experiment? Support with Bitcoin!</p>
+        <button class="donation-btn" id="donationBtn" title="Click to copy address">
+          <span class="btc-icon">₿</span>
+          <span class="donation-address">bc1q5ayxgfz33zyfkulkh7ujw3kr0uctv23uyeefcf</span>
+        </button>
+        <span class="copy-feedback" id="copyFeedback">✓ Copied!</span>
+      </div>
+      <p class="disclaimer">
+        This is a simulation for educational purposes only. Not financial advice.
+      </p>
+    </footer>
+  </div>
+
+  <!-- Transaction Modal -->
+  <div id="transactionModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Transaction History</h2>
+        <span class="close-btn" id="closeModal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div id="transactionList"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
