@@ -44,16 +44,12 @@ async function processWalletsByFrequency(frequency, btcPrice, withdrawalDate) {
       results.push({ wallet: wallet.name, status: 'depleted', btcWithdrawn: finalWithdrawal, btcRemaining: 0 });
     } else {
       // Normal withdrawal
-      const transaction = db.transaction(() => {
-        db.prepare(`
-          INSERT INTO transactions (wallet_id, date, btc_price, btc_withdrawn, btc_remaining, usd_withdrawn)
-          VALUES (?, ?, ?, ?, ?, ?)
-        `).run(wallet.id, withdrawalDate, btcPrice, btcToWithdraw, newBalance, wallet.monthly_withdrawal);
+      db.prepare(`
+        INSERT INTO transactions (wallet_id, date, btc_price, btc_withdrawn, btc_remaining, usd_withdrawn)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `).run(wallet.id, withdrawalDate, btcPrice, btcToWithdraw, newBalance, wallet.monthly_withdrawal);
 
-        db.prepare(`UPDATE wallets SET current_btc = ? WHERE id = ?`).run(newBalance, wallet.id);
-      });
-
-      transaction();
+      db.prepare(`UPDATE wallets SET current_btc = ? WHERE id = ?`).run(newBalance, wallet.id);
 
       console.log(`✅ ${wallet.name}: -${btcToWithdraw.toFixed(8)} BTC | Remaining: ${newBalance.toFixed(8)} BTC`);
       results.push({ wallet: wallet.name, status: 'active', btcWithdrawn: btcToWithdraw, btcRemaining: newBalance });
@@ -141,33 +137,69 @@ async function triggerRealWeeklyWithdrawal() {
  * Start cron jobs
  */
 function startCronJobs() {
-  // Monthly: Every 8th of the month at midnight UTC
-  cron.schedule('0 0 8 * *', async () => {
-    console.log('\n⏰ Scheduled MONTHLY withdrawal (8th at midnight UTC)!');
-    await triggerMonthlyWithdrawal();
-  });
+  const isTestMode = process.env.TEST_MODE === 'true';
 
-  // Weekly: Every Wednesday at midnight UTC
-  cron.schedule('0 0 * * 3', async () => {
-    console.log('\n⏰ Scheduled WEEKLY withdrawal (Wednesday at midnight UTC)!');
-    await triggerWeeklyWithdrawal();
-  });
+  if (isTestMode) {
+    // TEST MODE: Accelerated schedules for testing
+    console.log('🧪 TEST MODE ENABLED - Accelerated schedules:');
 
-  // BTC price update: Every hour
-  cron.schedule('0 * * * *', async () => {
-    console.log('\n🔄 Hourly BTC price update...');
-    try {
-      await fetchAndStoreBTCPrice();
-    } catch (error) {
-      console.error('❌ Error:', error.message);
-    }
-  });
+    // Monthly: Every 60 seconds
+    cron.schedule('*/60 * * * * *', async () => {
+      console.log('\n⏰ [TEST] Scheduled MONTHLY withdrawal (every 60 seconds)!');
+      await triggerMonthlyWithdrawal();
+    });
 
-  console.log('⏰ Production cron jobs scheduled (UTC):');
-  console.log('  - Monthly withdrawal: 8th of month at midnight UTC');
-  console.log('  - Weekly withdrawal: Every Wednesday at midnight UTC');
-  console.log('  - BTC price update: Every hour');
-  console.log('');
+    // Weekly: Every 15 seconds
+    cron.schedule('*/15 * * * * *', async () => {
+      console.log('\n⏰ [TEST] Scheduled WEEKLY withdrawal (every 15 seconds)!');
+      await triggerWeeklyWithdrawal();
+    });
+
+    // BTC price update: Every 30 seconds
+    cron.schedule('*/30 * * * * *', async () => {
+      console.log('\n🔄 [TEST] BTC price update (every 30 seconds)...');
+      try {
+        await fetchAndStoreBTCPrice();
+      } catch (error) {
+        console.error('❌ Error:', error.message);
+      }
+    });
+
+    console.log('⏰ Test cron jobs scheduled:');
+    console.log('  - Monthly withdrawal: Every 60 seconds');
+    console.log('  - Weekly withdrawal: Every 15 seconds');
+    console.log('  - BTC price update: Every 30 seconds');
+    console.log('');
+  } else {
+    // PRODUCTION MODE: Normal schedules
+    // Monthly: Every 8th of the month at 10:00 UTC
+    cron.schedule('0 10 8 * *', async () => {
+      console.log('\n⏰ Scheduled MONTHLY withdrawal (8th at 10:00 UTC)!');
+      await triggerMonthlyWithdrawal();
+    });
+
+    // Weekly: Every Wednesday at 10:00 UTC
+    cron.schedule('0 10 * * 3', async () => {
+      console.log('\n⏰ Scheduled WEEKLY withdrawal (Wednesday at 10:00 UTC)!');
+      await triggerWeeklyWithdrawal();
+    });
+
+    // BTC price update: Every hour
+    cron.schedule('0 * * * *', async () => {
+      console.log('\n🔄 Hourly BTC price update...');
+      try {
+        await fetchAndStoreBTCPrice();
+      } catch (error) {
+        console.error('❌ Error:', error.message);
+      }
+    });
+
+    console.log('⏰ Production cron jobs scheduled (UTC):');
+    console.log('  - Monthly withdrawal: 8th of month at 10:00 UTC');
+    console.log('  - Weekly withdrawal: Every Wednesday at 10:00 UTC');
+    console.log('  - BTC price update: Every hour');
+    console.log('');
+  }
 
   fetchAndStoreBTCPrice().catch(err => console.error('❌ Initial price fetch failed:', err.message));
 }

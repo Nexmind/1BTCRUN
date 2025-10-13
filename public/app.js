@@ -144,38 +144,38 @@ function startCountdown() {
     let targetDate = new Date(currentUTC);
 
     if (isMonthly) {
-      // Monthly: 8th of month at midnight UTC
+      // Monthly: 8th of month at 10:00 UTC
       targetDate.setUTCDate(8);
-      targetDate.setUTCHours(0, 0, 0, 0);
+      targetDate.setUTCHours(10, 0, 0, 0);
 
-      // If we've passed the 8th at midnight UTC this month, go to next month
+      // If we've passed the 8th at 10:00 UTC this month, go to next month
       if (targetDate <= now) {
         targetDate.setUTCMonth(targetDate.getUTCMonth() + 1);
       }
     } else {
-      // Weekly: Wednesday (day 3) at midnight UTC
+      // Weekly: Wednesday (day 3) at 10:00 UTC
       const currentDay = currentUTC.getUTCDay();
       let daysUntilWednesday = (3 - currentDay + 7) % 7;
 
-      // If it's Wednesday but past midnight UTC, go to next Wednesday
+      // If it's Wednesday but past 10:00 UTC, go to next Wednesday
       if (daysUntilWednesday === 0) {
-        if (currentUTC.getUTCHours() >= 0) {
+        if (currentUTC.getUTCHours() >= 10) {
           daysUntilWednesday = 7;
         }
       }
 
       targetDate.setUTCDate(currentUTC.getUTCDate() + daysUntilWednesday);
-      targetDate.setUTCHours(0, 0, 0, 0);
+      targetDate.setUTCHours(10, 0, 0, 0);
     }
 
     return targetDate;
   }
 
-  // Next monthly withdrawal: 8th of month at midnight UTC
+  // Next monthly withdrawal: 8th of month at 10:00 UTC
   const nextMonthly = getNextWithdrawalDate(true);
   const monthlyDiff = nextMonthly - now;
 
-  // Next weekly withdrawal: Wednesday at midnight UTC
+  // Next weekly withdrawal: Wednesday at 10:00 UTC
   const nextWednesday = getNextWithdrawalDate(false);
   const weeklyDiff = nextWednesday - now;
 
@@ -585,10 +585,10 @@ async function showTransactionModal(wallet) {
     modalTitle.textContent = `${sanitizeHTML(wallet.name)} - Transaction History`;
 
     if (transactions.length === 0) {
-      // Create a sample date for the 8th at midnight UTC to get the local time
+      // Create a sample date for the 8th at 10:00 UTC to get the local time
       const sampleDate = new Date();
       sampleDate.setUTCDate(8);
-      sampleDate.setUTCHours(0, 0, 0, 0);
+      sampleDate.setUTCHours(10, 0, 0, 0);
       const localTime = sampleDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 
       transactionList.innerHTML = `<div class="no-transactions">No transactions yet. Withdrawals happen on the 8th of each month at ${localTime}.</div>`;

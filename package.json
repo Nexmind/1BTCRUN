@@ -7,6 +7,7 @@
   },
   "scripts": {
     "start": "node server.js",
+    "test": "TEST_MODE=true node server.js",
     "dev": "node server.js",
     "migrate": "node server/db/migrate.js",
     "reset": "node server/db/reset.js"
@@ -17,11 +18,11 @@
   "description": "",
   "dependencies": {
     "axios": "^1.7.0",
-    "better-sqlite3": "^8.7.0",
     "chartjs-adapter-date-fns": "^3.0.0",
     "cors": "^2.8.5",
     "date-fns": "^3.0.0",
     "express": "^4.19.0",
-    "node-cron": "^3.0.0"
+    "node-cron": "^3.0.0",
+    "sql.js": "^1.13.0"
   }
 }
